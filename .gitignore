@@ -1,0 +1,14 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# VS Code
+.vscode/
+
+# Android build artifacts
+android/build/
+**/build/reports/
+
+# Flutter build output
+build/

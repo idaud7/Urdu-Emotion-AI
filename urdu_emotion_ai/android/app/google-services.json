@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "81637034149",
+    "project_id": "urdu-emotion-a492e",
+    "storage_bucket": "urdu-emotion-a492e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81637034149:android:6dc0bbaca01cb79760a54c",
+        "android_client_info": {
+          "package_name": "com.example.urdu_emotion_ai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD21ZQUuKnXltiaOAVgnRn44IaFVX4jrOY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

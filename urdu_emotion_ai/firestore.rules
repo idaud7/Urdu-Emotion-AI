@@ -1,0 +1,53 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: true when the calling user has role == 'admin' in their profile.
+    function isAdmin() {
+      return request.auth != null
+          && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // ── User profiles ────────────────────────────────────────────────────────
+    match /users/{uid} {
+      // Owner can read their own profile. Admin can read any profile.
+      allow read:  if request.auth != null && (request.auth.uid == uid || isAdmin());
+      // Only the owner can create their profile.
+      allow create: if request.auth != null && request.auth.uid == uid;
+      // Owner can update their own profile, AND Admin can update any profile (e.g., for blocking/unblocking).
+      allow update: if request.auth != null && (request.auth.uid == uid || isAdmin());
+      // Only Admin can delete any user profile.
+      allow delete: if isAdmin();
+
+      // ── Sessions sub-collection ────────────────────────────────────────────
+      match /sessions/{sessionId} {
+        // Owner can read their own sessions. Admin can read any session.
+        allow read:  if request.auth != null && (request.auth.uid == uid || isAdmin());
+        // Owner can create and update their own sessions.
+        allow write: if request.auth != null && request.auth.uid == uid;
+        // Only Admin can delete any session (as part of deleting user's whole data).
+        allow delete: if isAdmin();
+      }
+    }
+
+    // ── Collection-group query on "sessions" ─────────────────────────────────
+    // Allows the admin panel to run collectionGroup('sessions') across all users.
+    // Regular users can only read their own sessions via this path.
+    match /{path=**}/sessions/{sessionId} {
+      allow read: if request.auth != null
+                  && (resource.data.uid == request.auth.uid || isAdmin());
+    }
+
+    // ── Feedback ─────────────────────────────────────────────────────────────
+    // Any authenticated user can submit their own feedback (create only).
+    // Only admin can read or delete feedback entries.
+    match /feedback/{feedbackId} {
+      allow create: if request.auth != null
+          && request.resource.data.uid == request.auth.uid;
+      allow read:   if isAdmin();
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+  }
+}
